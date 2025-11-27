@@ -8,18 +8,6 @@ import (
 	"net/http"
 )
 
-// GetSub godoc
-// @Summary Получить подписку
-// @Description Возвращает данные подписки по ID
-// @Tags subscriptions
-// @Accept  json
-// @Produce  json
-// @Param   id  path  string  true  "ID подписки"
-// @Success 200 {object} domain.Order
-// @Failure 400 {object} map[string]string "invalid ID"
-// @Failure 404 {object} map[string]string "not found"
-// @Failure 500 {object} map[string]string "internal server error"
-// @Router /sub/{id} [get]
 func (h *Handlers) PostShortner(w http.ResponseWriter, r *http.Request) {
 	var shortURLRequest domain.CreateShortURLRequest
 
