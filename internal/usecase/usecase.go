@@ -8,13 +8,11 @@ import (
 )
 
 type Postgres interface {
-	CreateOrder(ctx context.Context, sub domain.Order) error
-	GetOrder(ctx context.Context, user_id string) (domain.Order, error)
+	Set(ctx context.Context, data domain.ShortURL) error
 }
 
 type Cache interface {
-	Get(orderUID string) (domain.Order, bool)
-	Add(order domain.Order)
+	Set(ctx context.Context, data domain.CreateShortURLRequest) error
 }
 
 type Profile struct {

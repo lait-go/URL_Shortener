@@ -53,14 +53,9 @@ func AppRun(ctx context.Context, c *config.Config) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if closeErr := post.Close(); closeErr != nil {
-			log.ErrorContext(ctx, "failed to close postgres connection", closeErr)
-		}
-	}()
 	log.InfoContext(ctx, "postgres initialized")
 
-	cache, err := cache.New(ctx, c.Cache, post)
+	cache, err := cache.New(ctx, c.Cache)
 	if err != nil {
 		return err
 	}
@@ -91,6 +86,10 @@ func AppRun(ctx context.Context, c *config.Config) error {
 	case err := <-serverErr:
 		log.ErrorContext(ctx, "server error", err)
 		return err
+	}
+
+	if closeErr := post.Close(); closeErr != nil {
+		log.ErrorContext(ctx, "failed to close postgres connection", closeErr)
 	}
 
 	if err := server.Close(c.Http.ShutdownTimeout); err != nil {

@@ -11,12 +11,7 @@ import (
 
 
 func RunMigrate(path string, cfg postgres.Config) error {
-	key := cfg.Source
-	if key == "" {
-		return fmt.Errorf("migration database connection string is empty")
-	}
-	
-	mig, err := migrate.New(fmt.Sprintf("file://%s", path), key)
+	mig, err := migrate.New(fmt.Sprintf("file://%s", path), cfg.DbKeyInit())
 	if err != nil {
 		return fmt.Errorf("error to run migration: %w", err)
 	}

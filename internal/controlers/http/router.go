@@ -34,7 +34,7 @@ func Router(profile *usecase.Profile, c http_server.Config) http.Handler{
 
 	handlers := New(profile)
 
-	r.Get("/sub/{id}", handlers.GetOrder)
+	r.Post("/shorten", handlers.PostShortner)
 
 	return r
 }
