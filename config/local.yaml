@@ -1,0 +1,15 @@
+api:
+  gin_mode: ""
+
+db:
+  max_open_conns: 10
+  max_idle_conns: 5
+  conn_max_lifetime: 30m
+
+server:
+  port: ":8080"
+
+retry:
+  attempts: 3
+  delay: 50ms
+  backoff: 2.0

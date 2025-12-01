@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>URL Shortener</title>
+  <style>
+    body { max-width: 600px; margin: 2em auto; font-family: Arial, sans-serif; }
+    input, button { padding: 0.5em; margin: 0.5em 0; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; text-align: left; }
+  </style>
+</head>
+<body>
+
+<h1>Укоротитель ссылок</h1>
+
+<section>
+  <h2>Создать короткую ссылку</h2>
+  <input type="text" id="fullUrl" placeholder="Введите исходный URL" />
+  <button id="createBtn">Создать</button>
+  <p>Короткая ссылка: <a id="shortUrlLink" href="#" target="_blank"></a></p>
+</section>
+
+<section>
+  <h2>Просмотреть аналитику</h2>
+  <input type="text" id="shortUrlForAnalytics" placeholder="Введите короткую ссылку" />
+  <button id="analyticsBtn">Показать аналитику</button>
+
+  <table id="analyticsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>IP</th>
+        <th>User-Agent</th>
+        <th>Время перехода</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script>
+  const apiBase = 'http://localhost:8080'; 
+
+  document.getElementById('createBtn').addEventListener('click', createShortURL);
+  document.getElementById('analyticsBtn').addEventListener('click', fetchAnalytics);
+
+  async function createShortURL() {
+    const url = document.getElementById('fullUrl').value.trim();
+    if (!url) {
+      alert('Введите URL');
+      return;
+    }
+    try {
+      const res = await fetch(apiBase + '/api/url-shortener/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }) 
+      });
+      if (!res.ok) {
+        alert('Ошибка при создании краткой ссылки: ' + res.statusText);
+        return;
+      }
+      const data = await res.json();  
+      const shortUrl = data.result;
+      const link = document.getElementById('shortUrlLink');
+      link.textContent = shortUrl;
+      link.href = apiBase + '/s/' + shortUrl;
+    } catch (error) {
+      alert('Ошибка при создании краткой ссылки');
+      console.error(error);
+    }
+  }
+
+  async function fetchAnalytics() {
+    const shortUrl = document.getElementById('shortUrlForAnalytics').value.trim();
+    if (!shortUrl) {
+      alert('Введите короткую ссылку');
+      return;
+    }
+    try {
+      const res = await fetch(apiBase + '/api/url-shortener/analytics/' + shortUrl);
+      if (!res.ok) {
+        alert('Ошибка при получении аналитики: ' + res.statusText);
+        return;
+      }
+      const data = await res.json();
+      const results = data.result;
+
+      const table = document.getElementById('analyticsTable');
+      const tbody = table.querySelector('tbody');
+      tbody.innerHTML = '';
+      results.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.ip}</td>
+          <td>${item.user_agent}</td>
+          <td>${new Date(item.time).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+      table.style.display = results.length ? 'table' : 'none';
+    } catch (error) {
+      alert('Ошибка при получении аналитики');
+      console.error(error);
+    }
+  }
+</script>
+
+</body>
+</html>
