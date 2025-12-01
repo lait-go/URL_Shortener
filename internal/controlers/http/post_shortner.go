@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handlers) PostShortner(w http.ResponseWriter, r *http.Request) {
-	var shortURLRequest domain.CreateShortURLRequest
+	var shortURLRequest *domain.ShortURLRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&shortURLRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

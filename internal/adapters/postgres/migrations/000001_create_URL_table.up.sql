@@ -12,9 +12,7 @@ CREATE TABLE url_clicks (
     id SERIAL PRIMARY KEY,
     short_url_id INTEGER NOT NULL REFERENCES shortened_urls(id) ON DELETE CASCADE, -- ссылка на короткую ссылку
     user_agent TEXT NOT NULL,           -- User-Agent пользователя
-    referrer TEXT,                      -- реферер, откуда пришёл пользователь
     ip_address INET,                   -- IP-адрес пользователя
-    device_type VARCHAR(50),            -- тип устройства (опционально)
     clicked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() -- время перехода
 );
 

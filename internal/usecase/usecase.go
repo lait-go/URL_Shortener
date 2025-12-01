@@ -8,11 +8,13 @@ import (
 )
 
 type Postgres interface {
-	Set(ctx context.Context, data domain.ShortURL) error
+	Set(ctx context.Context, data *domain.ShortURL) error
+	Get(ctx context.Context, shortURL string) (*domain.ShortURL, error)
 }
 
 type Cache interface {
-	Set(ctx context.Context, data domain.CreateShortURLRequest) error
+	Set(ctx context.Context, data *domain.ShortURL) error
+	Get(ctx context.Context, shortURL string) (*domain.ShortURLRequest, error)
 }
 
 type Profile struct {

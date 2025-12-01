@@ -1,27 +1,29 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 // Сущность короткой ссылки
 type ShortURL struct {
 	ID          string    `json:"id" db:"id"`                     // уникальный идентификатор
 	OriginalURL string    `json:"original_url" db:"original_url"` // полный URL
-	ShortCode   string    `json:"short_code" db:"short_key"`     // короткий код (abc123)
+	ShortCode   string    `json:"short_code" db:"short_code"`      // короткий код (abc123)
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`     // время создания
 }
 
 // Запрос на создание короткой ссылки
-type CreateShortURLRequest struct {
+type ShortURLRequest struct {
 	OriginalURL string `json:"original_url" binding:"required,url"`
-	CustomAlias string `json:"custom_alias,omitempty"`
+	ShortCode   string `json:"short_code,omitempty"`
 }
 
 // Информация о переходе по короткой ссылке (для аналитики)
 type ClickAnalytics struct {
-	ShortCode string    `json:"short_code"`
-	Timestamp time.Time `json:"timestamp"`
-	UserAgent string    `json:"user_agent"`
-	IP        string    `json:"ip,omitempty"`
+	ShortCode string    `json:"short_code" db:"short_code"`
+	Timestamp time.Time `json:"timestamp" db:"timestamp"`
+	UserAgent string    `json:"user_agent" db:"user_agent"`
+	IP        string    `json:"ip,omitempty" db:"ip"`
 	// Можно добавить поля для устройства, браузера, страны и т.д.
 }
 

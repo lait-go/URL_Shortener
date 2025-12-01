@@ -8,37 +8,37 @@ import (
 	"time"
 )
 
-func (p *Profile) SaveURL(ctx context.Context, data domain.CreateShortURLRequest) (*domain.ShortURL, error) {
-	if data.CustomAlias == "" {
-		data.CustomAlias = p.checkURLToCache(data)
-	}
-
-	if err := p.Cache.Set(ctx, data); err != nil {
-		return &domain.ShortURL{}, err
-	}
-
-	short := &domain.ShortURL{
+func (p *Profile) SaveURL(ctx context.Context, data *domain.ShortURLRequest) (*domain.ShortURLRequest, error) {
+	shortData := &domain.ShortURL{
+		ShortCode:   data.ShortCode,
 		OriginalURL: data.OriginalURL,
-		ShortCode:   data.CustomAlias,
 		CreatedAt:   time.Now(),
 	}
 
-	err := p.Postgres.Set(ctx, *short)
-	if err != nil {
-		return &domain.ShortURL{}, err
+	if data.ShortCode == "" {
+		data.ShortCode = p.checkURLToCache(shortData)
 	}
 
-	return short, nil
+	if err := p.Cache.Set(ctx, shortData); err != nil {
+		return nil, err
+	}
+
+	err := p.Postgres.Set(ctx, shortData)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // TODO: реализовать поиск в бд
-func (p *Profile) checkURLToCache(data domain.CreateShortURLRequest) string {
+func (p *Profile) checkURLToCache(data *domain.ShortURL) string {
 	var shortCode string
 	for {
 		shortCode = createShortURL(data.OriginalURL)
 
 		if err := p.Cache.Set(context.Background(), data); err != nil {
-			if err.Error() == domain.ErrorExists {
+			if err.Error() == domain.NOTFOUND {
 				continue
 			}
 		}
@@ -49,5 +49,5 @@ func (p *Profile) checkURLToCache(data domain.CreateShortURLRequest) string {
 }
 
 func createShortURL(URL string) string {
-	return URL[:rand.IntN(8)] + strconv.Itoa(rand.IntN(256))
+	return URL[6:rand.IntN(8)] + strconv.Itoa(rand.IntN(256))
 }

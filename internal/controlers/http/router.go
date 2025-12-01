@@ -35,6 +35,7 @@ func Router(profile *usecase.Profile, c http_server.Config) http.Handler{
 	handlers := New(profile)
 
 	r.Post("/shorten", handlers.PostShortner)
+	r.Get("/s/{short_url}", handlers.TransitionToURL)
 
 	return r
 }
